@@ -1,11 +1,24 @@
-import React from "react";
-import Country from "./Country";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-const Content = ({ countries }) => {
+const Content = ({ countries, setCountries }) => {
+  const api_key = process.env.REACT_APP_API_KEY;
+
+  useEffect(() => {
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/weather?lat={60}&lon={-95}&appid=${api_key}`
+      )
+      .then((response) => {
+        console.log("promise fulfilled");
+        console.log(response.data);
+      });
+  });
+
   if (countries.length === 0 || countries.length > 10) {
     return <div>Too many matches, specify another filter</div>;
   } else if (countries.length === 1) {
-    //console.log(countries[0]);
+    console.log(countries[0]);
     return (
       <div>
         <h1>{countries[0].name}</h1>
@@ -26,11 +39,15 @@ const Content = ({ countries }) => {
     return (
       <div>
         {countries.map((country, i) => (
-          <div>
-            <div key={i}>
-              {country.name}
-              <button>show</button>
-            </div>
+          <div key={i}>
+            {country.name}
+            <button
+              onClick={() => {
+                setCountries([country]);
+              }}
+            >
+              show
+            </button>
           </div>
         ))}
       </div>

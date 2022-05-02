@@ -30,7 +30,7 @@ const App = () => {
   return (
     <div>
       <Filter value={search} handleFilter={handleFilter} />
-      <Content countries={countries} />
+      <Content countries={countries} setCountries={setCountries} />
     </div>
   );
 };
