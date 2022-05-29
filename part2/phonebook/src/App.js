@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import "./index.css";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 
 import personServices from "./services/persons";
 
@@ -10,14 +12,13 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNum, setNewNum] = useState("");
   const [word, setWord] = useState("");
+  const [notif, setNotif] = useState(null);
 
   useEffect(() => {
     personServices.getAll().then((initialPersons) => {
       setPersons(initialPersons);
     });
   }, []);
-
-  console.log("render", persons.length, "notes");
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -27,7 +28,6 @@ const App = () => {
           `${newName} is already added to phonebook, replace the old number with the new one?`
         )
       ) {
-        // do
         const person = persons.find((p) => p.name === newName);
         const changeID = person.id;
         const changedPerson = { ...person, number: newNum };
@@ -38,6 +38,19 @@ const App = () => {
             setPersons(
               persons.map((p) => (p.id !== changeID ? p : returnedPerson))
             );
+
+            setNotif(`Changed ${returnedPerson.name}'s phone number`);
+            setTimeout(() => {
+              setNotif(null);
+            }, 5000);
+          })
+          .catch((error) => {
+            setNotif(
+              `Information of ${person.name} has already been removed from server`
+            );
+            setTimeout(() => {
+              setNotif(null);
+            }, 5000);
           });
       }
     } else {
@@ -48,6 +61,12 @@ const App = () => {
 
       personServices.create(personObj).then((addedPerson) => {
         setPersons(persons.concat(addedPerson));
+
+        setNotif(`Added ${addedPerson.name}`);
+        setTimeout(() => {
+          setNotif(null);
+        }, 5000);
+
         setNewName("");
         setNewNum("");
       });
@@ -69,6 +88,7 @@ const App = () => {
   const handleDelete = (id) => {
     const personToDelete = persons.find((person) => person.id === id);
     const newPersons = persons.filter((person) => person.id !== id);
+
     if (window.confirm(`delete ${personToDelete.name}?`)) {
       personServices.deleteNow(id).then(() => {
         setPersons(newPersons);
@@ -87,7 +107,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={notif} />
       <Filter handleFilter={handleFilter} />
 
       <h2>add a new</h2>
