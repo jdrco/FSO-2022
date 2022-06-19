@@ -99,9 +99,9 @@ const App = () => {
   const personsToShow =
     persons && word !== ""
       ? persons.filter(
-          (person) =>
-            person.name.toLowerCase().includes(word.toLowerCase()) === true
-        )
+        (person) =>
+          person.name.toLowerCase().includes(word.toLowerCase()) === true
+      )
       : persons;
 
   return (
